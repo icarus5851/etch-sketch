@@ -115,7 +115,7 @@ draw.addEventListener("click",()=>{
 })
 
 const gridBoxes = gridContainer.querySelectorAll(".grid-box");
-
+enableTouchSupport(gridBoxes);
 gridBoxes.forEach(box => {
     box.addEventListener("mouseover" , (e)=>{
         mouseover = true;
@@ -154,3 +154,36 @@ function getRandomColor() {
     ];
     return Colors[Math.floor(Math.random() * Colors.length)];
   }
+
+  function enableTouchSupport(gridBoxes) {
+    gridBoxes.forEach((box) => {
+        box.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            const touch = e.target;
+            if (eraseron) {
+                mouseErase(touch);
+            } else {
+                mouseDraw(touch);
+            }
+        });
+
+        box.addEventListener("touchmove", (e) => {
+            e.preventDefault();
+            const touch = document.elementFromPoint(
+                e.touches[0].clientX,
+                e.touches[0].clientY
+            );
+            if (touch && touch.classList.contains("grid-box")) {
+                if (eraseron) {
+                    mouseErase(touch);
+                } else {
+                    mouseDraw(touch);
+                }
+            }
+        });
+
+        box.addEventListener("touchend", (e) => {
+            e.preventDefault();
+        });
+    });
+}
