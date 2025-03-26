@@ -8,16 +8,12 @@ drawGrid(16);
 
 function drawGrid(side) {
     gridContainer.textContent = "";
-    const containerWidth = gridContainer.offsetWidth;
-    const containerHeight = gridContainer.offsetHeight;
-    const boxSize = parseFloat(Math.min(containerWidth, containerHeight) / side);
-
     for (let i = 0; i < side; i++) {
         for (let j = 0; j < side; j++) {
             const gridBox = document.createElement("div");
             gridBox.classList.add("grid-box");
-            gridBox.style.width = `${boxSize}px`;
-            gridBox.style.height = `${boxSize}px`;
+            gridBox.style.width = `${parseFloat(100/side)}%`;
+            gridBox.style.height = `${parseFloat(100/side)}%`;
             gridBox.setAttribute("draggable", "false");
             gridContainer.appendChild(gridBox);
         }
@@ -26,9 +22,10 @@ function drawGrid(side) {
 
 let mousedown = false , mouseover = false;
 let eraseron = false;
+let touched = false;
 
 function mouseDraw(box){
-    if(mousedown && mouseover){
+    if((mousedown && mouseover) || touched){
         if(!randomColor){
             box.style.backgroundColor = "#000000";
         }
@@ -39,7 +36,7 @@ function mouseDraw(box){
 
 }
 function mouseErase(box){
-    if(mousedown && mouseover){
+    if((mousedown && mouseover )|| touched){
         box.style.backgroundColor = "#EFE9F4";
     }
 }
@@ -76,20 +73,43 @@ size.addEventListener("click" , () =>{
     gridBoxes.forEach(box => {
         box.addEventListener("mouseover" , (e)=>{
             mouseover = true;
+            touched = false;
             if(eraseron)  mouseErase(box);
             else mouseDraw(box);
         });
-        box.addEventListener("mousemove" , (e)=>{
-            mouseover = true;
-            if(eraseron)  mouseErase(box);
-            else mouseDraw(box);
+        box.addEventListener("touchmove", (e) => {
+            touched = true;
+            const touch = document.elementFromPoint(
+                e.touches[0].clientX,
+                e.touches[0].clientY
+            );
+            if (touch && touch.classList.contains("grid-box")) {
+                if (eraseron) mouseErase(touch);
+                else mouseDraw(touch);
+            }
+            e.preventDefault();
+        });
+        box.addEventListener("touchstart", (e) => {
+            touched = true;
+            const touch = document.elementFromPoint(
+                e.touches[0].clientX,
+                e.touches[0].clientY
+            );
+            
+            if (touch && touch.classList.contains("grid-box")) {
+                if (eraseron) mouseErase(touch);
+                else mouseDraw(touch);
+            }
+            e.preventDefault();
         });
         box.addEventListener("mousedown" , (e)=>{
             mousedown = true;
+            touched = false;
             if(eraseron)  mouseErase(box);
             else mouseDraw(box);
         });
         box.addEventListener("mouseup" , (e)=>{
+            touched = false;
             mousedown = false;
             mouseover= false;
         });
@@ -119,15 +139,43 @@ const gridBoxes = gridContainer.querySelectorAll(".grid-box");
 gridBoxes.forEach(box => {
     box.addEventListener("mouseover" , (e)=>{
         mouseover = true;
+        touched = false;
         if(eraseron)  mouseErase(box);
         else mouseDraw(box);
     });
+    box.addEventListener("touchmove", (e) => {
+        touched = true;
+        const touch = document.elementFromPoint(
+            e.touches[0].clientX,
+            e.touches[0].clientY
+        );
+        if (touch && touch.classList.contains("grid-box")) {
+            if (eraseron) mouseErase(touch);
+            else mouseDraw(touch);
+        }
+        e.preventDefault();
+    });
+    box.addEventListener("touchstart", (e) => {
+        touched = true;
+        const touch = document.elementFromPoint(
+            e.touches[0].clientX,
+            e.touches[0].clientY
+        );
+        
+        if (touch && touch.classList.contains("grid-box")) {
+            if (eraseron) mouseErase(touch);
+            else mouseDraw(touch);
+        }
+        e.preventDefault();
+    });
     box.addEventListener("mousedown" , (e)=>{
         mousedown = true;
+        touched = false;
         if(eraseron)  mouseErase(box);
         else mouseDraw(box);
     });
     box.addEventListener("mouseup" , (e)=>{
+        touched = false;
         mousedown = false;
         mouseover= false;
     });
